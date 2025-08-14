@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#PBS -j oe
+set -euo pipefail
+
+<%# environment setup provided by form %>
+cat <<'EOF' > /tmp/env_setup.sh
+<%= ENV_SETUP %>
+EOF
+bash /tmp/env_setup.sh
+
+cd "<%= ENV['PROJECT_DIR'] %>"
+
+# Ensure deps are present (uv optional if already synced)
+if command -v uv >/dev/null 2>&1; then
+  uv sync || true
+fi
+
+HOSTNAME_FQDN=$(hostname -f)
+PORT="${PORT:-8000}"
+
+# Launch FastAPI (your_project.api.app:app) on compute node
+uv run uvicorn your_project.api.app:app --host 0.0.0.0 --port "$PORT" &
+
+# Simple wait loop until the port is ready
+for i in $(seq 1 30); do
+  sleep 2
+  if ss -lnt | awk '{print $4}' | grep -q ":${PORT}$"; then break; fi
+done
+
+# Connection info for OOD
+cat > connection.yml <<YAML
+---
+host: ${HOSTNAME_FQDN}
+port: ${PORT}
+YAML
+
+echo "Server started on http://${HOSTNAME_FQDN}:${PORT}"
+wait
+

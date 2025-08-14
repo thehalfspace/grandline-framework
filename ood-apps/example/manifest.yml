@@ -1,0 +1,6 @@
+name: FastAPI + Polars
+category: Interactive Apps
+subcategory: Web IDEs
+role: batch_connect
+description: "Start a FastAPI server backed by your project environment"
+

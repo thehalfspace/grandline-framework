@@ -1,0 +1,38 @@
+attributes:
+  - bc_num_hours
+  - bc_queue
+  - bc_account
+  - bc_num_slots
+  - env_setup
+  - project_dir
+  - port
+form:
+  - bc_account
+  - bc_queue
+  - bc_num_hours
+  - bc_num_slots
+  - env_setup
+  - project_dir
+  - port
+attributes:
+  bc_num_hours:
+    value: 2
+  bc_queue:
+    label: "Partition/Queue"
+    value: "gpu"
+  bc_num_slots:
+    label: "CPUs"
+    value: 2
+  env_setup:
+    label: "Environment setup (bash)"
+    value: |
+      module purge
+      # activate project env; example uses uv in project_dir
+      source "$project_dir/.venv/bin/activate" 2>/dev/null || true
+  project_dir:
+    label: "Project directory"
+    value: "<%= ENV['HOME'] %>/my-new-project"
+  port:
+    label: "Port"
+    value: 8000
+
